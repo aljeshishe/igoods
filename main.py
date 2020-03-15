@@ -106,10 +106,10 @@ def process(on_result, shop, headers):
                         on_result.send(data)
 
 
-def result_writer():
+def result_writer(file_name):
     log.info('Started writing results')
     try:
-        with open('data_{}.json'.format(now_str()), 'w', encoding='utf-8') as fp:
+        with open(file_name, 'w', encoding='utf-8') as fp:
             while True:
                 data = yield
                 log.info(' '.join(map(lambda i: f'{i[0]}:{i[1]}', data.items())))
@@ -124,16 +124,6 @@ def now_str():
     return datetime.now().strftime('%y_%m_%d-%H_%M_%S')
 
 
-def main():
-    log.info('Started')
-    on_result = result_writer()
-    on_result.send(None)
-    for shop, headers in shops.items():
-        with context(shop=shop):
-            process(on_result, shop, email.message_from_string(headers))
-
-    log.info('Finished')
-
 if __name__ == '__main__':
     Path('data.json').mkdir(parents=True, exist_ok=True)
     Path('logs').mkdir(parents=True, exist_ok=True)
@@ -143,4 +133,12 @@ if __name__ == '__main__':
                                   logging.StreamHandler()])
     logging.getLogger('requests').setLevel(logging.INFO)
     logging.getLogger('urllib3').setLevel(logging.INFO)
-    main()
+
+    log.info('Started')
+    on_result = result_writer(file_name='data.json/data_{}.json'.format(now_str()))
+    on_result.send(None)
+    for shop, headers in shops.items():
+        with context(shop=shop):
+            process(on_result, shop, email.message_from_string(headers))
+
+    log.info('Finished')
