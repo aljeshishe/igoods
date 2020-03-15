@@ -1,18 +1,10 @@
-FROM ubuntu:latest
+FROM puckel/docker-airflow
 
-RUN apt-get update && apt-get -y install cron
+WORKDIR /app
+COPY . /app
+COPY dag.py /usr/local/airflow/dags
+#RUN conda env create -f requirements.yaml -p ./cenv
+RUN pip install requests==2.23.0 pyspark==2.4.5
 
-# Copy cronfile file to the cron.d directory
-COPY cronfile /etc/cron.d/cronfile
-
-# Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/cronfile
-
-# Apply cron job
-RUN crontab /etc/cron.d/cronfile
-
-# Create the log file to be able to run tail
-RUN touch /var/log/cron.log
-
-# Run the command on container startup
-CMD cron && tail -f /var/log/cron.log
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["webserver"]

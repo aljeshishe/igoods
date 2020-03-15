@@ -2,10 +2,8 @@ channels:
 - anaconda-fusion
 - defaults
 dependencies:
-- python==3.8.1
-- pymysql==0.9.2
+- python==3.7
 - pip:
   - click==7.0
-  - alembic==1.4.1
   - requests==2.23.0
   - pyspark==2.4.5

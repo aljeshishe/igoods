@@ -7,11 +7,9 @@ from datetime import datetime
 
 from lxml import html
 import requests
-from pymongo import MongoClient
+
 
 log = logging.getLogger(__name__)
-client = MongoClient('localhost', 27017)
-food_db = client.food_db
 
 shops = dict(metro='''Host: igooods.ru
 User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0
