@@ -54,12 +54,14 @@ Cache-Control: no-cache''')
 
 
 @contextmanager
-def context(**kwargs):
+def context(verbose=True, **kwargs):
     kwargs_str = ' '.join(map(lambda i: f'{i[0]}={i[1]}', kwargs.items()))
-    log.info(f'Processing {kwargs_str}')
+    if verbose:
+        log.info(f'Processing {kwargs_str}')
     try:
         yield None
-        log.info(f'Finished processing {kwargs_str}')
+        if verbose:
+            log.info(f'Finished processing {kwargs_str}')
     except Exception as e:
         log.exception(f'Exception while processing {kwargs_str}')
 
@@ -94,7 +96,7 @@ def process(on_result, shop, headers):
                 products = tree.xpath('//div[@class="b-product-small-card"]')
 
                 for product in products:
-                    with context(shop=shop, cat=cat, page=page, product=product):
+                    with context(verbose=False, shop=shop, cat=cat, page=page, product=product):
                         attrib = product.xpath('.//div[@class="g-cart-action small"]')[0].attrib
                         del attrib['class']
                         data = dict(attrib)
@@ -112,7 +114,7 @@ def result_writer(file_name):
         with open(file_name, 'w', encoding='utf-8') as fp:
             while True:
                 data = yield
-                log.info(' '.join(map(lambda i: f'{i[0]}:{i[1]}', data.items())))
+                log.debug(' '.join(map(lambda i: f'{i[0]}:{i[1]}', data.items())))
                 data['datetm'] = str(datetime.now())
                 fp.write('{}\n'.format(json.dumps(data, ensure_ascii=False)))
                 fp.flush()
@@ -127,10 +129,12 @@ def now_str():
 if __name__ == '__main__':
     Path('data.json').mkdir(parents=True, exist_ok=True)
     Path('logs').mkdir(parents=True, exist_ok=True)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s.%(msecs)03d|%(levelname)-4.4s|%(thread)-6.6s|%(funcName)-10.10s|%(message)s',
                         handlers=[logging.FileHandler('logs/food_{}.log'.format(now_str())),
-                                  logging.StreamHandler()])
+                                  handler])
     logging.getLogger('requests').setLevel(logging.INFO)
     logging.getLogger('urllib3').setLevel(logging.INFO)
 
