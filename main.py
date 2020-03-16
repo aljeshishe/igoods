@@ -89,10 +89,11 @@ def process(on_result, shop, headers):
     log.info(f'Processing categories {" ".join(categories)}')
     for cat in sorted(categories):
         with context(shop=shop, cat=cat):
-            url = 'https://igooods.ru/products?category_id={cat}&from_category=true&page={page}'
+            url = 'https://igooods.ru/products?category_id={cat}&from_category=true&page={page}&q[by]=letter&q[order]=asc'
             tree = parse(get(url.format(cat=cat, page=1), headers=headers, shop=shop))
             pages = int(tree.xpath('//div[@data-total-pages]/@data-total-pages')[0])
             for page in range(1, pages):
+                # if page == 2: return
                 tree = parse(get(url=url.format(cat=cat, page=page), headers=headers))
                 products = tree.xpath('//div[@class="b-product-small-card"]')
 
