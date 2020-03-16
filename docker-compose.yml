@@ -3,7 +3,7 @@ services:
     webserver:
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: ./Dockerfile
             args:
                 buildno: 1
         image: aljeshishe/airflow
