@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
@@ -12,7 +12,7 @@ from airflow.utils.dates import days_ago
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': days_ago(0),
+    'start_date': datetime(year=2017, month=3, day=28),
     'email': ['ax66@@bk.com'],
     'email_on_failure': True,
     'email_on_retry': True,
@@ -37,7 +37,7 @@ dag = DAG('igoods',
           catchup=False,
           default_args=default_args,
           description='igoods crawler',
-          schedule_interval=timedelta(days=1),
+          schedule_interval='0 5 * * *',
           tags=['test'],
           )
 t1 = BashOperator(
