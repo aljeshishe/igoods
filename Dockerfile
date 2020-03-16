@@ -1,10 +1,12 @@
-FROM puckel/docker-airflow
+FROM aljeshishe/airflow
 
-WORKDIR /app
-COPY . /app
-COPY dag.py /usr/local/airflow/dags
-#RUN conda env create -f requirements.yaml -p ./cenv
-RUN pip install requests==2.23.0 pyspark==2.4.5
+USER root
+
+
+RUN apt update && apt install openjdk-8-jre-headless  ca-certificates-java -y
+COPY requirements.txt requirements.txt
+RUN pwd  && pip install -r requirements.txt
+
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["webserver"]
