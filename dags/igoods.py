@@ -12,7 +12,7 @@ from airflow.utils.dates import days_ago
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(year=2017, month=3, day=28),
+    'start_date': datetime.utcnow(),
     'email': ['ax66@@bk.com'],
     'email_on_failure': True,
     'email_on_retry': True,
