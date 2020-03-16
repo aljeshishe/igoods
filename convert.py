@@ -19,7 +19,7 @@ if __name__ == '__main__':
     for file_name in list(glob.glob(str(parent_path / 'jsons' / '*.json'))):
         print(f'processing {file_name}')
         df = spark.read.json(file_name)
-        print(f'Read {df.count()} records in json')
+        print(f'{df.count()} records read from json')
 
         df = df.drop('data-group-quantity', 'data-energy-drink', 'data-amount', 'data-item-weight', 'data-energy-drink'). \
             withColumn('old_price', df['data-old-price'].cast(FloatType())). \
@@ -45,13 +45,14 @@ if __name__ == '__main__':
             else:
                 raise e
 
-        print(f'Read {store.count()} records in store')
+        store_count = store.count()
+        print(f'{store_count} records read from in store')
 
         u = store.union(df)
         print(f'{u.count()} records after union')
 
         drop = u.withColumn('date', date_trunc('DAY', u.datetm)).dropDuplicates(['date', 'product_id']).drop('date')
-        print(f'{drop.count()} records after drop duplicates by date product_id')
+        print(f'{drop.count()}(+{drop.count()-store_count}) records saving to store (after drop duplicates by date product_id)')
 
 
         tmp_dir_name = '{}_tmp_{}{}'.format(store_name, datetime.now().strftime('%y_%d_%m__%H-%M-%S'),
