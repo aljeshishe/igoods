@@ -1,8 +1,9 @@
 import email
 import json
 import logging
+import os
 from pathlib import Path
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from datetime import datetime
 
 from lxml import html
@@ -109,9 +110,10 @@ def process(on_result, shop, headers):
 
 
 def result_writer(file_name):
-    log.info('Started writing results')
+    temp_file_name = file_name.with_suffix('.tmp')
+    log.info(f'Started writing results to {temp_file_name}')
     try:
-        with open(file_name, 'w', encoding='utf-8') as fp:
+        with open(temp_file_name, 'w', encoding='utf-8') as fp:
             while True:
                 data = yield
                 log.debug(' '.join(map(lambda i: f'{i[0]}:{i[1]}', data.items())))
@@ -119,15 +121,17 @@ def result_writer(file_name):
                 fp.write('{}\n'.format(json.dumps(data, ensure_ascii=False)))
                 fp.flush()
     except GeneratorExit:
-        log.info('Finished writing results')
+        log.info(f'Finished writing results. Renaming {temp_file_name} to {file_name}')
+        os.rename(temp_file_name, file_name)
 
 
 def now_str():
-    return datetime.now().strftime('%y_%m_%d-%H_%M_%S')
+    return datetime.now().strftime('%y_%m_%d__%H_%M_%S')
 
 
 if __name__ == '__main__':
-    Path('data.json').mkdir(parents=True, exist_ok=True)
+    jsons_path = Path('jsons')
+    jsons_path.mkdir(parents=True, exist_ok=True)
     Path('logs').mkdir(parents=True, exist_ok=True)
     handler = logging.StreamHandler()
     handler.setLevel(logging.INFO)
@@ -139,10 +143,9 @@ if __name__ == '__main__':
     logging.getLogger('urllib3').setLevel(logging.INFO)
 
     log.info('Started')
-    on_result = result_writer(file_name='data.json/data_{}.json'.format(now_str()))
-    on_result.send(None)
-    for shop, headers in shops.items():
-        with context(shop=shop):
-            process(on_result, shop, email.message_from_string(headers))
-
+    with closing(result_writer(file_name=jsons_path / '{}.json'.format(now_str()))) as on_result:
+        on_result.send(None)
+        for shop, headers in shops.items():
+            with context(shop=shop):
+                process(on_result, shop, email.message_from_string(headers))
     log.info('Finished')
