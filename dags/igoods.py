@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta
 
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
@@ -12,7 +12,7 @@ from airflow.utils.dates import days_ago
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime.utcnow(),
+    'start_date': days_ago(0),
     'email': ['ax66@@bk.com'],
     'email_on_failure': True,
     'email_on_retry': True,
