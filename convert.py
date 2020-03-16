@@ -1,4 +1,5 @@
 import glob
+import os
 import random
 from datetime import datetime
 
@@ -61,3 +62,5 @@ if __name__ == '__main__':
         drop.coalesce(1).write.parquet(str(tmp_path))
         shutil.rmtree(parent_path / store_name, ignore_errors=True)
         shutil.move(str(tmp_path), parent_path / store_name)
+
+        os.rename(file_name, file_name + '.done')
