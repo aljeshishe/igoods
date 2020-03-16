@@ -83,9 +83,9 @@ def parse(response):
 
 def process(on_result, shop, headers):
     response = get('https://igooods.ru/products', headers)
-    save(f'cat_{shop}.html', response)
     assert f'{shop}-selected' in response.text
-    categories = parse(response).xpath('//a[@data-category-id]/@data-category-id')
+    categories = parse(response).xpath('//div[@class="b-side-menu__item small with-children"]/a[@data-category-id]/@data-category-id')
+    log.info(f'Processing categories {" ".join(categories)}')
     for cat in sorted(categories):
         with context(shop=shop, cat=cat):
             url = 'https://igooods.ru/products?category_id={cat}&from_category=true&page={page}'
