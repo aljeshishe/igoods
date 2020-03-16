@@ -27,14 +27,10 @@ services:
 
     jupyter:
         image: jupyter/pyspark-notebook
+        command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --port 8888
         restart: always
         # depends_on:
-        environment:
-            - LOAD_EX=n
         volumes:
             - .:/home/jovyan
-            - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
         ports:
-            - "8081:8888"
+            - "8888:8888"
