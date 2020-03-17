@@ -52,7 +52,7 @@ if __name__ == '__main__':
         u = store.union(df)
         print(f'{u.count()} records after union')
 
-        drop = u.withColumn('date', date_trunc('DAY', u.datetm)).dropDuplicates(['date', 'product_id']).drop('date')
+        drop = u.withColumn('date', date_trunc('DAY', u.datetm)).dropDuplicates(['date', 'product_id', 'shop']).drop('date')
         print(f'{drop.count()}(+{drop.count()-store_count}) records saving to store (after drop duplicates by date product_id)')
 
 
