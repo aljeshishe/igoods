@@ -12,11 +12,11 @@ from airflow.utils.dates import days_ago
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': days_ago(0),
+    'start_date': days_ago(1),
     'email': ['ax66@@bk.com'],
     'email_on_failure': True,
     'email_on_retry': True,
-    'retries': 1,
+    'retries': 0,
     'retry_delay': timedelta(minutes=5),
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
@@ -37,7 +37,7 @@ dag = DAG('igoods',
           catchup=False,
           default_args=default_args,
           description='igoods crawler',
-          schedule_interval='0 5 * * *',
+          schedule_interval='41 8 * * *',
           tags=['test'],
           )
 t1 = BashOperator(
