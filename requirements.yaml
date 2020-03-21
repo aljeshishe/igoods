@@ -8,3 +8,4 @@ dependencies:
   - requests==2.23.0
   - pyspark==2.4.5
   - lxml==4.5.0
+  - apache-airflow==1.10.9
