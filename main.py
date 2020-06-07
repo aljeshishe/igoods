@@ -56,7 +56,7 @@ def process(on_result, shop):
                 data = get(url=url.format(shop_id=shop_id, cat=cat, offset=offset)).json()
 
                 for product in data['data']['list']:
-                    with context(verbose=True, shop=shop, cat=cat, offset=offset, product=product):
+                    with context(verbose=False, shop=shop, cat=cat, offset=offset, product=product):
                         del product['image']
                         product['shop'] = shop
                         product['cat'] = cat
